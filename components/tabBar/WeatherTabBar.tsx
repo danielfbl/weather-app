@@ -1,5 +1,6 @@
 import useApplicationDimensions from "@/hooks/useApplicationDimensions";
-import { StyleSheet, View } from "react-native";
+import { BlurView } from "expo-blur";
+import { StyleSheet } from "react-native";
 import ArcComponent from "./elements/ArcComponent";
 import TabBarItems from "./elements/TabBarItems";
 
@@ -7,7 +8,9 @@ export default function WeatherTabBar() {
   const TabBarHeight = 88;
   const { width, height } = useApplicationDimensions();
   return (
-    <View
+    <BlurView
+      intensity={50}
+      tint="dark"
       style={{
         height: TabBarHeight,
         ...StyleSheet.absoluteFillObject,
@@ -15,7 +18,7 @@ export default function WeatherTabBar() {
       }}
     >
       <ArcComponent height={TabBarHeight} width={width} />
-      <TabBarItems/>
-    </View>
+      <TabBarItems />
+    </BlurView>
   );
 }

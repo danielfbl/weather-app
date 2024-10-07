@@ -44,7 +44,7 @@ export default function ForecastSheetBackground({
         <Path
           path={borderPath}
           style={"stroke"}
-          strokeWidth={2}
+          strokeWidth={1}
           color={"white"}
         >
           <LinearGradient

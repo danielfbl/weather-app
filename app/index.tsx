@@ -1,8 +1,4 @@
-import HomeBackground from "@/components/HomeBackground";
-import WeatherInfo from "@/components/section/WeatherInfo";
-import ForecastSheet from "@/components/sheet/ForecastSheet";
-import WeatherTabBar from "@/components/tabBar/WeatherTabBar";
-import { currentWeather } from "@/data/CurrentWeather";
+import Home from "@/screens/Home";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -29,10 +25,7 @@ export default function Index() {
   return (
     <SafeAreaProvider onLayout={onLayoutRootView}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <HomeBackground />
-        <WeatherInfo weather={currentWeather} />
-        <ForecastSheet />
-        <WeatherTabBar />
+        <Home />
         <StatusBar style="light" />
       </GestureHandlerRootView>
     </SafeAreaProvider>

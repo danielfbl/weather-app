@@ -1,6 +1,6 @@
-import { Forecast } from "@/models/Weather";
+import { Forecast, ForecastType } from "@/models/Weather";
 import { DEGREE_SYMBOL } from "@/utils/constants";
-import { convertDateTo12HrFormat } from "@/utils/dateHelper";
+import { convertDateTo12HrFormat, getDayOfTheWeek } from "@/utils/dateHelper";
 import { Canvas, RoundedRect, Shadow } from "@shopify/react-native-skia";
 import { Image, StyleSheet, Text, View } from "react-native";
 
@@ -17,19 +17,35 @@ export default function ForecastCapsule({
   height,
   radius,
 }: ForecastCapsuleProps) {
-  const { date, icon, probability, temperature } = forecast;
-  const timeToDisplay = convertDateTo12HrFormat(date);
+  const { date, icon, probability, temperature, type } = forecast;
+
+  const getTimeDateOpacityDisplay = (): [string, number] => {
+    let timeOrDay = "";
+    let opacity = 0;
+
+    if (type === ForecastType.Hourly) {
+      timeOrDay = convertDateTo12HrFormat(date);
+      opacity = timeOrDay.toLowerCase() === "now" ? 1 : 0.2;
+    } else {
+      const [dayOfTheWeek, isToday] = getDayOfTheWeek(date);
+      timeOrDay = dayOfTheWeek;
+      opacity = isToday ? 1 : 0.2;
+    }
+    return [timeOrDay, opacity];
+  };
+  const [timeToDisplay, capsuleOpacity] = getTimeDateOpacityDisplay();
+  const probabilityOpacity = probability > 0 ? 1 : 0;
 
   return (
     <View style={{ width: width, height: height }}>
-      <Canvas style={{ ...StyleSheet.absoluteFillObject}}>
+      <Canvas style={{ ...StyleSheet.absoluteFillObject }}>
         <RoundedRect
           x={0}
           y={0}
           width={width}
           height={height}
           r={radius}
-          color={"rgba(72,49,157,1)"}
+          color={`rgba(72,49,157,${capsuleOpacity})`}
         >
           <Shadow
             dx={1}
@@ -40,11 +56,20 @@ export default function ForecastCapsule({
           />
         </RoundedRect>
       </Canvas>
-      <View style={{flex: 1, justifyContent: 'space-between', alignItems: 'center', paddingVertical: 20}}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingVertical: 20,
+        }}
+      >
         <Text style={styles.time}>{timeToDisplay}</Text>
         <View>
           <Image source={icon} width={width / 2} height={width / 2} />
-          <Text style={styles.probability}>{probability}%</Text>
+          <Text style={[styles.probability, { opacity: probabilityOpacity }]}>
+            {probability}%
+          </Text>
         </View>
         <Text style={styles.temperature}>
           {temperature}
@@ -68,7 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     color: "#40cbd8",
-    textAlign: 'center',
+    textAlign: "center",
   },
   temperature: {
     fontFamily: "SF-Regular",

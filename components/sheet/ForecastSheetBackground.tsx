@@ -1,9 +1,9 @@
 import {
-    Canvas,
-    LinearGradient,
-    Path,
-    RoundedRect,
-    vec,
+  Canvas,
+  LinearGradient,
+  Path,
+  RoundedRect,
+  vec,
 } from "@shopify/react-native-skia";
 import { BlurView } from "expo-blur";
 import { StyleSheet } from "react-native";
@@ -31,7 +31,7 @@ export default function ForecastSheetBackground({
       tint="dark"
     >
       <Canvas
-        style={{ flex: 1, borderRadius: cornerRadius, overflow: "hidden" }}
+        style={{ flex: 1, borderRadius: cornerRadius, overflow: 'visible' }}
       >
         <RoundedRect x={0} y={0} width={width} height={height} r={cornerRadius}>
           <LinearGradient

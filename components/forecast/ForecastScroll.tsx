@@ -17,8 +17,12 @@ export default function ForecastScroll({
   capsuleRadius,
 }: ForecastScrollProps) {
   return (
-    <ScrollView horizontal style={{paddingLeft: 20, paddingTop: 20, paddingBottom: 10}}>
-      <View style={{ flex: 1, flexDirection: 'row', gap: 12 }}>
+    <ScrollView
+      horizontal
+      style={{ paddingLeft: 20, paddingTop: 20, paddingBottom: 10 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={{ flex: 1, flexDirection: "row", gap: 12 }}>
         {forecasts.map((forecast, index) => (
           <ForecastCapsule
             forecast={forecast}

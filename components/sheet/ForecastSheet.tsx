@@ -1,3 +1,4 @@
+import { useForecastSheetPosition } from "@/context/ForecastSheetContext";
 import { hourly, weekly } from "@/data/ForecastData";
 import useApplicationDimensions from "@/hooks/useApplicationDimensions";
 import { ForecastType } from "@/models/Weather";
@@ -5,6 +6,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useAnimatedReaction, useSharedValue } from "react-native-reanimated";
 import ForecastScroll from "../forecast/ForecastScroll";
 import AirQualityWidget from "../forecast/widgets/AirQualityWidget";
 import FeelsLikeWidget from "../forecast/widgets/FeelsLikeWidget";
@@ -22,18 +24,34 @@ import ForecastSheetBackground from "./ForecastSheetBackground";
 export default function ForecastSheet() {
   const [selectedForecastType, setSelectedForecastType] =
     useState<ForecastType>(ForecastType.Hourly);
+
   const { width, height } = useApplicationDimensions();
   const snapPoints = ["38.5%", "83%"];
   const firstSnapPoint = height * (parseFloat(snapPoints[0]) / 100);
+  const secondSnapPoint = height * (parseFloat(snapPoints[1]) / 100);
+  const minY = height - secondSnapPoint;
+  const maxY = height - firstSnapPoint;
   const cornerRadius = 44;
   const capsuleRadius = 30;
   const capsuleHeight = height * 0.17;
   const capsuleWidth = width * 0.15;
   const smallWidgetSize = width / 2 - 20;
-
+  const currentPosition = useSharedValue(0);
+  const animatedPosition = useForecastSheetPosition()
+  const normalizePosition = (position: number) => {
+    "worklet"
+    return ((position - maxY) / (maxY - minY)) * -1;
+  };
+  useAnimatedReaction(
+    () => {
+      return currentPosition.value;
+    },
+    (cv) => animatedPosition.value = normalizePosition(cv)
+  );
   return (
     <BottomSheet
       snapPoints={snapPoints}
+      animatedPosition={currentPosition}
       animateOnMount={false}
       handleIndicatorStyle={{
         width: 48,

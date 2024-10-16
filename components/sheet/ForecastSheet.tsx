@@ -3,10 +3,15 @@ import { hourly, weekly } from "@/data/ForecastData";
 import useApplicationDimensions from "@/hooks/useApplicationDimensions";
 import { ForecastType } from "@/models/Weather";
 import BottomSheet from "@gorhom/bottom-sheet";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { useAnimatedReaction, useSharedValue } from "react-native-reanimated";
+import Animated, {
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import ForecastScroll from "../forecast/ForecastScroll";
 import AirQualityWidget from "../forecast/widgets/AirQualityWidget";
 import FeelsLikeWidget from "../forecast/widgets/FeelsLikeWidget";
@@ -37,17 +42,42 @@ export default function ForecastSheet() {
   const capsuleWidth = width * 0.15;
   const smallWidgetSize = width / 2 - 20;
   const currentPosition = useSharedValue(0);
-  const animatedPosition = useForecastSheetPosition()
+  const animatedPosition = useForecastSheetPosition();
+  const translateXHourly = useSharedValue(0);
+  const animatedHourlyStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateXHourly.value }],
+    };
+  });
+  const translateXWeekly = useSharedValue(width);
+  const duration = 500
+  const animatedWeeklyStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateXWeekly.value }],
+    };
+  });
   const normalizePosition = (position: number) => {
-    "worklet"
+    "worklet";
     return ((position - maxY) / (maxY - minY)) * -1;
   };
+
   useAnimatedReaction(
     () => {
       return currentPosition.value;
     },
-    (cv) => animatedPosition.value = normalizePosition(cv)
+    (cv) => (animatedPosition.value = normalizePosition(cv))
   );
+
+  useEffect(() => {
+    if (selectedForecastType === ForecastType.Weekly) {
+      translateXHourly.value = withTiming(-width, {duration});
+      translateXWeekly.value = withTiming(-width, {duration});
+    } else {
+      translateXHourly.value = withTiming(0, {duration});
+      translateXWeekly.value = withTiming(width, {duration});
+    }
+  }, [selectedForecastType]);
+
   return (
     <BottomSheet
       snapPoints={snapPoints}
@@ -74,14 +104,25 @@ export default function ForecastSheet() {
           contentContainerStyle={{ paddingBottom: 10 }}
           showsVerticalScrollIndicator={false}
         >
-          <ForecastScroll
-            capsuleWidth={capsuleWidth}
-            capsuleHeight={capsuleHeight}
-            capsuleRadius={capsuleRadius}
-            forecasts={
-              selectedForecastType === ForecastType.Weekly ? weekly : hourly
-            }
-          />
+          <View style={{ flexDirection: "row" }}>
+            <Animated.View style={animatedHourlyStyles}>
+              <ForecastScroll
+                capsuleWidth={capsuleWidth}
+                capsuleHeight={capsuleHeight}
+                capsuleRadius={capsuleRadius}
+                forecasts={hourly}
+              />
+            </Animated.View>
+            <Animated.View style={animatedWeeklyStyles}>
+              <ForecastScroll
+                capsuleWidth={capsuleWidth}
+                capsuleHeight={capsuleHeight}
+                capsuleRadius={capsuleRadius}
+                forecasts={weekly}
+              />
+            </Animated.View>
+          </View>
+
           <View
             style={{ flex: 1, paddingTop: 30, paddingBottom: smallWidgetSize }}
           >

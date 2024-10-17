@@ -17,6 +17,7 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
 } from "react-native-reanimated";
+import BackgroundGradient from "./BackgroundGradient";
 
 export default function HomeBackground() {
   const dimensions = useApplicationDimensions();
@@ -72,15 +73,7 @@ export default function HomeBackground() {
 
   return (
     <View style={{ ...StyleSheet.absoluteFillObject }}>
-      <Canvas style={{ ...StyleSheet.absoluteFillObject }}>
-        <Rect x={0} y={0} width={width} height={height}>
-          <LinearGradient
-            start={vec(0, 0)}
-            end={vec(width, height)}
-            colors={backgroundColors}
-          />
-        </Rect>
-      </Canvas>
+      <BackgroundGradient colors={backgroundColors} />
       <AnimatedImgBackground
         source={require("../assets/home/Background.png")}
         resizeMode="cover"

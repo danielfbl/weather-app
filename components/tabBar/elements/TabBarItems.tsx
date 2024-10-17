@@ -1,4 +1,5 @@
 import useApplicationDimensions from "@/hooks/useApplicationDimensions";
+import { Link } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import ListIcon from "../icons/ListIcon";
 import MapIcon from "../icons/MapIcon";
@@ -36,7 +37,9 @@ export default function TabBarItems() {
           <CircleButton radius={circleRadius} pressed={pressed} />
         )}
       </Pressable>
-      <ListIcon />
+      <Link style={{ flex: 1 }} href={"/weatherList"}>
+        <ListIcon />
+      </Link>
     </View>
   );
 }
